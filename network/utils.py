@@ -10,6 +10,8 @@ import io
 import traceback
 import sys
 from PIL import Image
+import shutil
+
 
 
 def dicom_to_png(input_path, output_path):
@@ -29,4 +31,20 @@ def dicom_to_png(input_path, output_path):
             print("Dicom file corrupted")
     return None
 
+
+def organize_classes(input_path, output_path, file_dict, ext='.png'):
+    for file_stem, target in file_dict.items():
+        print(file_stem)
+        target = str(target)
+        print(target)
+        if not os.path.exists(os.path.join( output_path, target)):
+            os.makedirs(os.path.join( output_path, target))
+        shutil.copy( os.path.join( input_path, file_stem+ext ), os.path.join( output_path, target, file_stem+ext ) )
+    return None
+
+
+def organize_dataset(csv_path, input_path, output_path):
+    labels = pd.read_csv(csv_path)
+    file_dict = dict(zip(labels['patientId'].values, labels['Target'].values))
+    organize_classes(input_path, output_path, file_dict)
 
